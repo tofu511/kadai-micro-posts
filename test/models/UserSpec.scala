@@ -1,5 +1,3 @@
 package models
 
-class UserSpec extends ModelSpec {
-
-}
+class UserSpec extends ModelSpec {}

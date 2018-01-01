@@ -2,13 +2,14 @@ package models
 
 import java.time.ZonedDateTime
 
-import scalikejdbc._
+import scalikejdbc._, jsr310._
 import skinny.orm._
 
 /**
   * User
   */
-case class User(id: Option[Long], name: String,
+case class User(id: Option[Long],
+                name: String,
                 email: String,
                 password: String,
                 createAt: ZonedDateTime = ZonedDateTime.now(),
@@ -24,8 +25,8 @@ object User extends SkinnyCRUDMapper[User] {
     autoConstruct(rs, n)
 
   private def toNamedValues(record: User): Seq[(Symbol, Any)] = Seq(
-    'name -> record.name,
-    'email  -> record.email,
+    'name     -> record.name,
+    'email    -> record.email,
     'password -> record.password,
     'createAt -> record.createAt,
     'updateAt -> record.updateAt

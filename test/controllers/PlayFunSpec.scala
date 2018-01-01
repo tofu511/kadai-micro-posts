@@ -17,7 +17,7 @@ import play.api.inject.bind
 import scala.reflect.ClassTag
 
 abstract class PlayFunSpec
-  extends FunSpec
+    extends FunSpec
     with MustMatchers
     with OptionValues
     with WsScalaTestClient
