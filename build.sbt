@@ -50,7 +50,9 @@ libraryDependencies ++= Seq(
   "com.github.t3hnar"      %% "scala-bcrypt"                 % "3.0",
   "com.adrianhurt"         %% "play-bootstrap"               % "1.1-P25-B3",
   "mysql"                  % "mysql-connector-java"          % "6.0.6",
-  "org.flywaydb"           %% "flyway-play"                  % "3.1.0"
+  "org.flywaydb"           %% "flyway-play"                  % "3.1.0",
+  "jp.t2v"                 %% "play2-auth"                   % "0.14.2",
+  "jp.t2v"                 %% "play2-auth-test"              % "0.14.2" % Test
 )
 
 // Adds additional packages into Twirl
