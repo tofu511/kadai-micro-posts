@@ -13,7 +13,7 @@ import play.filters.csrf.CSRF._
 import play.filters.csrf._
 import scalikejdbc.PlayModule
 import play.api.inject.bind
-import services.{ MockUserService, UserService }
+import services.{ MicroPostService, MockMicroPostService, MockUserService, UserService }
 
 import scala.reflect.ClassTag
 
@@ -30,6 +30,7 @@ abstract class PlayFunSpec
       .disable[DBModule]
       .disable[PlayModule]
       .overrides(bind[UserService].to[MockUserService]) // モックを使用する設定を追加
+      .overrides(bind[MicroPostService].to[MockMicroPostService]) // モックを使用する設定を追加
       .build()
 
   lazy val injector = fakeApplication.injector
