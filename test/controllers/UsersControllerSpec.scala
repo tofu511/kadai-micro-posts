@@ -17,6 +17,13 @@ class UsersControllerSpec extends PlayFunSpec with GuiceOneAppPerSuite {
 
   describe("UsersController") {
     describe("route of UserController#index") {
+      it("should not be valid when not logged in") {
+        val result =
+          route(app, addCsrfToken(FakeRequest(GET, routes.UsersController.index().toString))).get
+
+        status(result) mustBe SEE_OTHER
+      }
+
       it("should be valid when logged in") {
         val email = "test@test.com"
         val result =
@@ -48,6 +55,14 @@ class UsersControllerSpec extends PlayFunSpec with GuiceOneAppPerSuite {
     }
 
     describe("route of UserController#show") {
+      it("should not be valid when not logged in") {
+        val id = 1L
+        val result =
+          route(app, addCsrfToken(FakeRequest(GET, routes.UsersController.show(id).toString))).get
+
+        status(result) mustBe SEE_OTHER
+      }
+
       it("should be valid when logged in") {
         val email = "test@test.com"
         val id    = 1L
