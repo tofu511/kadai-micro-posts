@@ -2,12 +2,15 @@ package controllers
 
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import jp.t2v.lab.play2.auth.test.Helpers._
+import jp.t2v.lab.play2.pager._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.UserService
 import java.security.MessageDigest
 import java.math.BigInteger
+
+import play.twirl.api.Html
 
 class UsersControllerSpec extends PlayFunSpec with GuiceOneAppPerSuite {
 
@@ -19,7 +22,7 @@ class UsersControllerSpec extends PlayFunSpec with GuiceOneAppPerSuite {
     describe("route of UserController#index") {
       it("should not be valid when not logged in") {
         val result =
-          route(app, addCsrfToken(FakeRequest(GET, routes.UsersController.index().toString))).get
+          route(app, addCsrfToken(FakeRequest(GET, routes.UsersController.index(Pager.default).toString))).get
 
         status(result) mustBe SEE_OTHER
       }
@@ -28,16 +31,16 @@ class UsersControllerSpec extends PlayFunSpec with GuiceOneAppPerSuite {
         val email = "test@test.com"
         val result =
           route(app,
-                addCsrfToken(FakeRequest(GET, routes.UsersController.index().toString))
+                addCsrfToken(FakeRequest(GET, routes.UsersController.index(Pager.default).toString))
                   .withLoggedIn(Config)(email)).get
 
-        val users = Config.userService.findAll()
+        val users = Config.userService.findAll(Pager.default)
 
-        val userNames = users.get.map { user =>
+        val userNames = users.get.items.map { user =>
           user.name
         }
 
-        val userEmail = users.get.map(_.email)
+        val userEmail = users.get.items.map(_.email)
 
         status(result) mustBe OK
 

@@ -3,6 +3,7 @@ package controllers
 import javax.inject.{ Inject, Singleton }
 
 import jp.t2v.lab.play2.auth.AuthenticationElement
+import jp.t2v.lab.play2.pager.Pager
 import play.api.Logger
 import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
 import play.api.mvc.{ Action, AnyContent, Controller }
@@ -15,16 +16,16 @@ class UsersController @Inject()(val messagesApi: MessagesApi, val userService: U
     with AuthConfigSupport
     with AuthenticationElement {
 
-  def index: Action[AnyContent] = StackAction { implicit request =>
+  def index(pager: Pager[models.User]): Action[AnyContent] = StackAction { implicit request =>
     userService
-      .findAll()
+      .findAll(pager)
       .map { users =>
         Ok(views.html.users.index(loggedIn, users))
       }
       .recover {
         case e: Exception =>
           Logger.error(s"occurred error", e)
-          Redirect(routes.UsersController.index())
+          Redirect(routes.UsersController.index(Pager.default))
             .flashing("failure" -> Messages("InternalError"))
       }
       .getOrElse(InternalServerError(Messages("InternalError")))
@@ -41,7 +42,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi, val userService: U
       .recover {
         case e: Exception =>
           Logger.error(s"occurred error", e)
-          Redirect(routes.UsersController.index())
+          Redirect(routes.UsersController.index(Pager.default))
             .flashing("failure" -> Messages("InternalError"))
       }
       .getOrElse(InternalServerError(Messages("InternalError")))

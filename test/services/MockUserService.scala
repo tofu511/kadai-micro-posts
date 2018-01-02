@@ -1,5 +1,7 @@
 package services
 
+import jp.t2v.lab.play2.pager.{ Pager, SearchResult }
+import jp.t2v.lab.play2.pager.Pager
 import models.User
 import scalikejdbc.DBSession
 
@@ -12,8 +14,8 @@ class MockUserService extends UserService {
   override def findByEmail(email: String)(implicit dbSession: DBSession): Try[Option[User]] =
     Success(Some(User(Some(1L), "test", email, "xxx")))
 
-  override def findAll()(implicit dbSession: DBSession): Try[List[User]] =
-    Success(List(User(Some(1L), "test", "test@test.com", "xxx")))
+  override def findAll(pager: Pager[User])(implicit dbSession: DBSession): Try[SearchResult[User]] =
+    Success(SearchResult(pager, 1)(_ => List(User(Some(1L), "test", "test@test.com", "xxx"))))
 
   override def findById(id: Long)(implicit dbSession: DBSession): Try[Option[User]] =
     Success(Some(User(Some(1L), "test", "test@test.com", "xxx")))

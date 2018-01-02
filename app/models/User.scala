@@ -2,6 +2,7 @@ package models
 
 import java.time.ZonedDateTime
 
+import jp.t2v.lab.play2.pager.{ OrderType, Sortable }
 import scalikejdbc._, jsr310._
 import skinny.orm._
 
@@ -38,4 +39,9 @@ object User extends SkinnyCRUDMapper[User] {
   def update(user: User)(implicit session: DBSession): Int =
     updateById(user.id.get).withAttributes(toNamedValues(user): _*)
 
+  implicit object sortable extends Sortable[User] {
+    override val default: (String, OrderType) = ("id", OrderType.Descending)
+    override val defaultPageSize: Int         = 10
+    override val acceptableKeys: Set[String]  = Set("id")
+  }
 }

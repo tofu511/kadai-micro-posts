@@ -52,11 +52,13 @@ libraryDependencies ++= Seq(
   "mysql"                  % "mysql-connector-java"          % "6.0.6",
   "org.flywaydb"           %% "flyway-play"                  % "3.1.0",
   "jp.t2v"                 %% "play2-auth"                   % "0.14.2",
-  "jp.t2v"                 %% "play2-auth-test"              % "0.14.2" % Test
+  "jp.t2v"                 %% "play2-auth-test"              % "0.14.2" % Test,
+  "jp.t2v"                 %% "play2-pager"                  % "0.1.0",
+  "jp.t2v"                 %% "play2-pager-scalikejdbc"      % "0.1.0"
 )
 
 // Adds additional packages into Twirl
-TwirlKeys.templateImports ++= Seq("forms._")
+TwirlKeys.templateImports ++= Seq("jp.t2v.lab.play2.pager._", "forms._")
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"
@@ -74,3 +76,9 @@ flywayDriver := envConfig.value.getString("jdbcDriver")
 flywayUrl := envConfig.value.getString("jdbcUrl")
 flywayUser := envConfig.value.getString("jdbcUserName")
 flywayPassword := envConfig.value.getString("jdbcPassword")
+
+play.sbt.routes.RoutesKeys.routesImport ++= Seq(
+  "jp.t2v.lab.play2.pager.Pager",
+  "jp.t2v.lab.play2.pager.Bindables._",
+  "models._"
+)

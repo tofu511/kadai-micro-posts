@@ -2,6 +2,9 @@ package services
 
 import javax.inject.Singleton
 
+import jp.t2v.lab.play2.pager.scalikejdbc._ // 明示的にインポートする
+import jp.t2v.lab.play2.pager.{ Pager, SearchResult }
+import jp.t2v.lab.play2.pager.Pager
 import models.User
 import scalikejdbc.{ AutoSession, DBSession }
 
@@ -19,9 +22,19 @@ class UserServiceImpl extends UserService {
     User.where('email -> email).apply().headOption
   }
 
-  override def findAll()(implicit dbSession: DBSession = AutoSession): Try[List[User]] = Try {
-    User.findAll()
-  }
+  override def findAll(pager: Pager[User])(implicit dbSession: DBSession = AutoSession): Try[SearchResult[User]] =
+    Try {
+      val size = User.countAllModels() // 総件数を取得する
+      // SearchResultを生成する
+      SearchResult(pager, size) { pager =>
+        // Pagerに基づいて結果を返す
+        User.findAllWithLimitOffset(
+          pager.limit,
+          pager.offset,
+          pager.allSorters.map(_.toSQLSyntax(User.defaultAlias))
+        )
+      }
+    }
 
   override def findById(id: Long)(implicit dbSession: DBSession = AutoSession): Try[Option[User]] = Try {
     User.findById(id)
