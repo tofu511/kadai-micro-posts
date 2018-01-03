@@ -11,7 +11,7 @@
             </div>
             <div class="media-body">
                 <div>
-                    <a href="@routes.UsersController.show(microPost.userId)">
+                    <a href="@routes.UsersController.show(microPost.userId, 1)">
                         @microPost.user.map(_.name).get
                     </a>
                     <span class="text-muted">posted at @microPost.createAt</span>

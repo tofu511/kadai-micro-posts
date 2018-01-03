@@ -15,7 +15,7 @@
                 @if(userOpt.isEmpty) {
                 <a class="navbar-brand" href="@routes.HomeController.index(Pager.default)">@Messages("ApplicationName")</a>
                 } else {
-                <a class="navbar-brand" href="#">@Messages("ApplicationName")</a>
+                <a class="navbar-brand" href="@routes.HomeController.index(Pager.default)">@Messages("ApplicationName")</a>
                 }
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -30,7 +30,7 @@
                                 @userOpt.get.name <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="@routes.UsersController.show(userOpt.get.id.get)">@Messages("User")</a> </li>
+                                <li><a href="@routes.UsersController.show(userOpt.get.id.get, 1)">@Messages("User")</a> </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
                                     @b3.formCSRF(routes.AuthController.logout(), 'name -> "logout", 'style -> "display: none") {
