@@ -50,6 +50,7 @@ libraryDependencies ++= Seq(
   "com.github.t3hnar"      %% "scala-bcrypt"                 % "3.0",
   "com.adrianhurt"         %% "play-bootstrap"               % "1.1-P25-B3",
   "mysql"                  % "mysql-connector-java"          % "6.0.6",
+  "org.postgresql"         % "postgresql"                    % "42.0.0",
   "org.flywaydb"           %% "flyway-play"                  % "3.1.0",
   "jp.t2v"                 %% "play2-auth"                   % "0.14.2",
   "jp.t2v"                 %% "play2-auth-test"              % "0.14.2" % Test,
@@ -81,4 +82,16 @@ play.sbt.routes.RoutesKeys.routesImport ++= Seq(
   "jp.t2v.lab.play2.pager.Pager",
   "jp.t2v.lab.play2.pager.Bindables._",
   "models._"
+)
+
+herokuJdkVersion in Compile := "1.8"
+
+herokuAppName in Compile := "tofu-micro-posts"
+
+herokuProcessTypes in Compile := Map(
+  "web" -> s"target/universal/stage/bin/${normalizedName.value} -Dhttp.port=$$PORT -Dconfig.resource=prod/application.conf -Ddb.default.migration.auto=true"
+)
+
+herokuConfigVars in Compile := Map(
+  "JAVA_OPTS" -> "-Xmx512m -Xms512m"
 )
