@@ -12,7 +12,7 @@ ScalaとPlayフレームワークで作ったTwitterクローンです。
 ## 動かす上での前提条件
 - sbtがインストールされていること。
 - MySQLがインストールされていること。
-- `/create-local-mysql-db.sh`を実行。もしくは`/create-musql-db.sql`の内容に従ってデータベースを作成すること。
+- `/create-local-mysql-db.sh`を実行。もしくは`/create-mysql-db.sql`の内容に従ってデータベースを作成すること。
 - `env/dev.conf`の`jdbcPassword`を適切な値に修正すること。
 
 ## 実行方法
