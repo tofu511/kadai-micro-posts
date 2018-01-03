@@ -10,7 +10,7 @@ trait MicroPostService {
 
   def create(microPost: MicroPost)(implicit dBSession: DBSession = AutoSession): Try[Long]
 
-  def deleteById(id: Long)(implicit dBSession: DBSession = AutoSession): Try[Int]
+  def deleteById(microPostId: Long)(implicit dBSession: DBSession = AutoSession): Try[Int]
 
   def findByUserId(pager: Pager[MicroPost], userId: Long)(
       implicit dBSession: DBSession = AutoSession

@@ -4,7 +4,7 @@ import javax.inject.Singleton
 
 import jp.t2v.lab.play2.pager.scalikejdbc._
 import jp.t2v.lab.play2.pager.{ Pager, SearchResult }
-import models.MicroPost
+import models.{ MicroPost, UserFollow }
 import scalikejdbc._
 
 import scala.util.Try
@@ -16,14 +16,14 @@ class MicroPostServiceImpl extends MicroPostService {
     MicroPost.create(microPost)
   }
 
-  override def deleteById(id: Long)(implicit dBSession: DBSession): Try[Int] = Try {
-    MicroPost.deleteById(id)
+  override def deleteById(microPostId: Long)(implicit dBSession: DBSession): Try[Int] = Try {
+    MicroPost.deleteById(microPostId)
   }
 
   override def findByUserId(pager: Pager[MicroPost],
                             userId: Long)(implicit dBSession: DBSession): Try[SearchResult[MicroPost]] =
     countBy(userId).map { size =>
-      SearchResult(pager, size)(findAllByWithLimitOffset(userId))
+      SearchResult(pager, size)(findAllByWithLimitOffset(Seq(userId)))
     }
 
   override def countBy(userId: Long)(implicit dBSession: DBSession): Try[Long] = Try {
@@ -33,15 +33,16 @@ class MicroPostServiceImpl extends MicroPostService {
   override def findAllByWithLimitOffset(pager: Pager[MicroPost], userId: Long)(
       implicit dBSession: DBSession
   ): Try[SearchResult[MicroPost]] = Try {
-    val size = MicroPost.countBy(sqls.eq(MicroPost.defaultAlias.userId, userId))
-    SearchResult(pager, size)(findAllByWithLimitOffset(userId))
+    val followingIds = UserFollow.findAllBy(sqls.eq(UserFollow.defaultAlias.userId, userId)).map(_.followId)
+    val size         = MicroPost.countBy(sqls.in(MicroPost.defaultAlias.userId, userId +: followingIds))
+    SearchResult(pager, size)(findAllByWithLimitOffset(userId +: followingIds))
   }
 
   private def findAllByWithLimitOffset(
-      userId: Long
+      userIds: Seq[Long]
   )(pager: Pager[MicroPost])(implicit dBSession: DBSession): Seq[MicroPost] =
     MicroPost.findAllByWithLimitOffset(
-      sqls.eq(MicroPost.defaultAlias.userId, userId),
+      sqls.in(MicroPost.defaultAlias.userId, userIds),
       pager.limit,
       pager.offset,
       pager.allSorters.map(_.toSQLSyntax(MicroPost.defaultAlias))
