@@ -2,7 +2,9 @@ package models
 
 import java.time.ZonedDateTime
 
-import scalikejdbc._, jsr310._
+import jp.t2v.lab.play2.pager.{ OrderType, Sortable }
+import scalikejdbc._
+import jsr310._
 import skinny.orm._
 import skinny.orm.feature._
 
@@ -25,7 +27,15 @@ object Favorite extends SkinnyCRUDMapper[Favorite] {
     right = User -> u,
     fk = "userId",
     on = sqls.eq(defaultAlias.userId, u.id),
-    merge = (f, u) => f.copy(user = u)
+    merge = (uf, f) => uf.copy(user = f)
+  ).includes[User](
+    merge = (favorites, users) =>
+      favorites.map { fav =>
+        users
+          .find(user => fav.microPost.exists(_.id == user.id))
+          .map(user => fav.copy(user = Some(user)))
+          .getOrElse(fav)
+    }
   )
 
   lazy val m = MicroPost.createAlias("m")
@@ -34,7 +44,15 @@ object Favorite extends SkinnyCRUDMapper[Favorite] {
     right = MicroPost -> m,
     fk = "microPostId",
     on = sqls.eq(defaultAlias.microPostId, m.id),
-    merge = (f, m) => f.copy(microPost = m)
+    merge = (uf, f) => uf.copy(microPost = f)
+  ).includes[MicroPost](
+    merge = (favorites, microposts) =>
+      favorites.map { fav =>
+        microposts
+          .find(mp => fav.microPost.exists(_.id == mp.id))
+          .map(mp => fav.copy(microPost = Some(mp)))
+          .getOrElse(fav)
+    }
   )
 
   lazy val allAssociations: CRUDFeatureWithId[Long, Favorite] = joins(userRef, microPostRef)
@@ -48,7 +66,7 @@ object Favorite extends SkinnyCRUDMapper[Favorite] {
 
   private def toNamedValues(record: Favorite): Seq[(Symbol, Any)] = Seq(
     'userId      -> record.userId,
-    'micropostId -> record.microPostId,
+    'microPostId -> record.microPostId,
     'createAt    -> record.createAt,
     'updateAt    -> record.updateAt
   )
@@ -59,4 +77,9 @@ object Favorite extends SkinnyCRUDMapper[Favorite] {
   def update(favorite: Favorite)(implicit session: DBSession): Int =
     updateById(favorite.id.get).withAttributes(toNamedValues(favorite): _*)
 
+  implicit object sortable extends Sortable[Favorite] {
+    override val default: (String, OrderType) = ("id", OrderType.Descending)
+    override val defaultPageSize: Int         = 10
+    override val acceptableKeys: Set[String]  = Set("id")
+  }
 }

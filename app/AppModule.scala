@@ -7,5 +7,6 @@ class AppModule extends AbstractModule {
     bind(classOf[UserService]).to(classOf[UserServiceImpl])
     bind(classOf[MicroPostService]).to(classOf[MicroPostServiceImpl])
     bind(classOf[UserFollowService]).to(classOf[UserFollowServiceImpl])
+    bind(classOf[FavoriteService]).to(classOf[FavoriteServiceImpl])
   }
 }
