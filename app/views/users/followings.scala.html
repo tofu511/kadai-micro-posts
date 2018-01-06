@@ -1,4 +1,4 @@
-@(currentUser: User, user: User, userFollows: List[UserFollow], followings: SearchResult[User], microPostsCount: Long, followersCount: Long)(implicit messages: Messages, flash: Flash, request: RequestHeader)
+@(currentUser: User, user: User, userFollows: List[UserFollow], followings: SearchResult[User], microPostsCount: Long, followersCount: Long, favoritesCount: Long)(implicit messages: Messages, flash: Flash, request: RequestHeader)
 
 @main(Messages("User"), Some(currentUser)) {
     <div class="row">
@@ -14,7 +14,7 @@
             </div>
         </aside>
         <div class="col-xs-8">
-            @views.html.users.tab(user, microPostsCount, followings.totalCount, followersCount)
+            @views.html.users.tab(user, microPostsCount, followings.totalCount, followersCount, favoritesCount)
             @views.html.users.users(user, followings)
         </div>
     </div>

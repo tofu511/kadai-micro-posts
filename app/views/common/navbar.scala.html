@@ -31,6 +31,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a href="@routes.UsersController.show(userOpt.get.id.get, 1)">@Messages("User")</a> </li>
+                                <li><a href="@routes.UsersController.getFavorites(userOpt.get.id.get, 1)">@Messages("Favorites")</a> </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
                                     @b3.formCSRF(routes.AuthController.logout(), 'name -> "logout", 'style -> "display: none") {

@@ -1,4 +1,4 @@
-@(user: User, microPostsCount: Long, followingsCount: Long, followersCount: Long)(implicit request: RequestHeader)
+@(user: User, microPostsCount: Long, followingsCount: Long, followersCount: Long, favoritesCount: Long)(implicit request: RequestHeader)
 
 <ul class="nav nav-tabs nav-justified">
     <li role="presentation" class="@{
@@ -15,6 +15,11 @@
         if(routes.UsersController.getFollowers(user.id.get, 1).toString.split("\\?")(0) == request.path) "active" else ""
     }"><a href="@routes.UsersController.getFollowers(user.id.get, 1)">
         Followers <span class="badge">@followersCount</span></a>
+    </li>
+    <li role="presentation" class="@{
+        if(routes.UsersController.getFavorites(user.id.get, 1).toString.split("\\?")(0) == request.path) "active" else ""
+    }"><a href="@routes.UsersController.getFavorites(user.id.get, 1)">
+        Favorites <span class="badge">@favoritesCount</span></a>
     </li>
 
 </ul>

@@ -4,17 +4,18 @@ import javax.inject.{ Inject, Singleton }
 
 import jp.t2v.lab.play2.auth.AuthenticationElement
 import jp.t2v.lab.play2.pager.{ Pager, Sortable }
-import models.{ MicroPost, User }
+import models.{ Favorite, MicroPost, User }
 import play.api.Logger
 import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
 import play.api.mvc.{ Action, AnyContent, Controller }
-import services.{ MicroPostService, UserFollowService, UserService }
+import services.{ FavoriteService, MicroPostService, UserFollowService, UserService }
 
 @Singleton
 class UsersController @Inject()(val messagesApi: MessagesApi,
                                 val userService: UserService,
                                 val userFollowService: UserFollowService,
-                                val microPostService: MicroPostService)
+                                val microPostService: MicroPostService,
+                                val favoriteService: FavoriteService)
     extends Controller
     with I18nSupport
     with AuthConfigSupport
@@ -42,15 +43,22 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     val triedMicroPosts     = microPostService.findByUserId(pager, userId)
     val triedFollowingsSize = userFollowService.countByUserId(userId)
     val triedFollowersSize  = userFollowService.countByFollowId(userId)
+    val triedFavorites      = favoriteService.findById(loggedIn.id.get)
+    val triedFavoriteSize   = favoriteService.countByUserId(loggedIn.id.get)
     (for {
       userOpt        <- triedUserOpt
       userFollows    <- triedUserFollows
       microPosts     <- triedMicroPosts
       followingsSize <- triedFollowingsSize
       followersSize  <- triedFollowersSize
+      favorites      <- triedFavorites
+      favoriteSize   <- triedFavoriteSize
     } yield {
       userOpt.map { user =>
-        Ok(views.html.users.show(loggedIn, user, userFollows, microPosts, followingsSize, followersSize))
+        Ok(
+          views.html.users
+            .show(loggedIn, user, userFollows, microPosts, followingsSize, followersSize, favorites, favoriteSize)
+        )
       }.get
     }).recover {
         case e: Exception =>
@@ -68,11 +76,13 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     val triedFollowers       = userFollowService.findFollowersByUserId(pager, userId)
     val triedMicroPostsSize  = microPostService.countBy(userId)
     val triedFollowingsSize  = userFollowService.countByUserId(userId)
+    val triedFavoriteSize    = favoriteService.countByUserId(loggedIn.id.get)
     (for {
       userFollows    <- triedMaybeUserFollow
       followers      <- triedFollowers
       microPostSize  <- triedMicroPostsSize
       followingsSize <- triedFollowingsSize
+      favoriteSize   <- triedFavoriteSize
     } yield {
       Ok(
         views.html.users.followers(
@@ -81,7 +91,8 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
           userFollows,
           followers,
           microPostSize,
-          followingsSize
+          followingsSize,
+          favoriteSize
         )
       )
     }).recover {
@@ -100,11 +111,13 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     val triedFollowings     = userFollowService.findFollowingsByUserId(pager, userId)
     val triedMicroPostsSize = microPostService.countBy(userId)
     val triedFollowersSize  = userFollowService.countByFollowId(userId)
+    val triedFavoriteSize   = favoriteService.countByUserId(loggedIn.id.get)
     (for {
       userFollows    <- triedUserFollows
       followings     <- triedFollowings
       microPostsSize <- triedMicroPostsSize
       followersSize  <- triedFollowersSize
+      favoriteSize   <- triedFavoriteSize
     } yield {
       Ok(
         views.html.users.followings(
@@ -113,7 +126,8 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
           userFollows,
           followings,
           microPostsSize,
-          followersSize
+          followersSize,
+          favoriteSize
         )
       )
     }).recover {
@@ -124,6 +138,39 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       }
       .getOrElse(InternalServerError(Messages("InternalError")))
 
+  }
+
+  def getFavorites(userId: Long, page: Int): Action[AnyContent] = StackAction { implicit request =>
+    val triedUserOpt        = userService.findById(userId)
+    val triedUserFollows    = userFollowService.findById(loggedIn.id.get)
+    val pager               = createPager[MicroPost](page)
+    val triedMicroPosts     = favoriteService.findFavoritesByUserId(pager, userId)
+    val triedFollowingsSize = userFollowService.countByUserId(userId)
+    val triedFollowersSize  = userFollowService.countByFollowId(userId)
+    val triedFavorites      = favoriteService.findById(loggedIn.id.get)
+    val triedFavoriteSize   = favoriteService.countByUserId(loggedIn.id.get)
+    (for {
+      userOpt        <- triedUserOpt
+      userFollows    <- triedUserFollows
+      microPosts     <- triedMicroPosts
+      followingsSize <- triedFollowingsSize
+      followersSize  <- triedFollowersSize
+      favorites      <- triedFavorites
+      favoriteSize   <- triedFavoriteSize
+    } yield {
+      userOpt.map { user =>
+        Ok(
+          views.html.users
+            .favorites(loggedIn, user, userFollows, microPosts, followingsSize, followersSize, favorites, favoriteSize)
+        )
+      }.get
+    }).recover {
+        case e: Exception =>
+          Logger.error("occurred error in UsersController#getFavorites", e)
+          Redirect(routes.UsersController.index(Pager.default))
+            .flashing("failure" -> Messages("InternalError"))
+      }
+      .getOrElse(InternalServerError(Messages("InternalError")))
   }
 
   private def createPager[A](page: Int)(implicit sortable: Sortable[A]): Pager[A] =

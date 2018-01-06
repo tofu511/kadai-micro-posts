@@ -1,0 +1,38 @@
+@import b3.vertical.fieldConstructor
+
+@(currentUser: User, microPosts: SearchResult[MicroPost], favorites: List[Favorite])(implicit messages: Messages, request: RequestHeader)
+
+<ul class="media-list">
+
+    @for(microPost <- microPosts.items) {
+    <li class="media">
+        <div class="media-left">
+            <img class="media-object img-rounded" src="@common.gravatarUrl(microPost.user.get.email)?s=50&amp;r=g&amp;d=identicon" alt="">
+        </div>
+        <div class="media-body">
+            <div>
+
+                <a href="@routes.UsersController.show(microPost.userId, 1)">
+                    @microPost.user.map(_.name).get
+                </a>
+
+                <span class="text-muted">posted at @microPost.createAt</span>
+            </div>
+            <div>
+                <p>@microPost.content</p>
+            </div>
+            @favorite.favorite_button(currentUser, microPost, favorites)
+        </div>
+    </li>
+    }
+</ul>
+@pagination(
+    microPosts,
+    routes.HomeController.index,
+    window = 3,
+    firstLabel = Html("First"),
+    previousLabel = Html("Prev"),
+    truncateLabel = Html("..snip.."),
+    nextLabel = Html("Next"),
+    lastLabel = Html("Last")
+)

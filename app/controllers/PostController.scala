@@ -4,8 +4,8 @@ import java.time.ZonedDateTime
 import javax.inject.{ Inject, Singleton }
 
 import jp.t2v.lab.play2.auth.AuthenticationElement
-import jp.t2v.lab.play2.pager.Pager
-import models.MicroPost
+import jp.t2v.lab.play2.pager.{ Pager, SearchResult }
+import models.{ Favorite, MicroPost }
 import play.api.Logger
 import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
 import play.api.mvc._
@@ -64,7 +64,9 @@ class PostController @Inject()(val userService: UserService,
     microPostService
       .findAllByWithLimitOffset(pager, user.id.get)
       .map { searchResult =>
-        BadRequest(views.html.index(Some(user), formWithErrors, searchResult))
+        BadRequest(
+          views.html.index(Some(user), formWithErrors, searchResult, List.empty[Favorite])
+        )
       }
       .recover {
         case e: Exception =>
