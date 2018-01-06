@@ -4,7 +4,7 @@
 ScalaとPlayフレームワークで作ったTwitterクローンです。
 
 ## バージョン
-- Play: 2.5.4
+- Play: 2.5.14
 - Scala:2.11.11
 - sbt: 0.13.15
 - MySQL: 5.7.20
