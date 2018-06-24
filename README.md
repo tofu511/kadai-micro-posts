@@ -1,4 +1,4 @@
-# kadai-micro-posts
+# micro-posts
 
 ## 概要
 ScalaとPlayフレームワークで作ったTwitterクローンです。
