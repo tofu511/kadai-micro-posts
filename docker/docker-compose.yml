@@ -6,5 +6,7 @@ services:
       - "4306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: micro_posts
+      MYSQL_PASSWORD: pass
     volumes:
       - "./mysql/init:/docker-entrypoint-initdb.d"
