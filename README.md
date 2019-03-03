@@ -8,15 +8,17 @@ ScalaとPlayフレームワークで作ったTwitterクローンです。
 - Scala:2.11.11
 - sbt: 0.13.15
 - MySQL: 5.7.20
+- Docker: 18.09
 
 ## 動かす上での前提条件
 - sbtがインストールされていること。
-- MySQLがインストールされていること。
-- `/create-local-mysql-db.sh`を実行。もしくは`/create-mysql-db.sql`の内容に従ってデータベースを作成すること。
+- Dockerがインストールされていること
 - `env/dev.conf`の`jdbcPassword`を適切な値に修正すること。
 
 ## 実行方法
 ```bash
+cd docker
+docker-compose up
 sbt flywayMigrate
 sbt run
 ```
