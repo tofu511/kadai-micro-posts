@@ -11,3 +11,9 @@ services:
       MYSQL_PASSWORD: pass
     volumes:
       - "./mysql/init:/docker-entrypoint-initdb.d"
+  web:
+    image: "nginx:1.15"
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/conf.d:/etc/nginx/conf.d"
