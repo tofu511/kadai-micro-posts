@@ -89,7 +89,7 @@ herokuJdkVersion in Compile := "1.8"
 herokuAppName in Compile := "tofu-micro-posts"
 
 herokuProcessTypes in Compile := Map(
-  "web" -> s"target/universal/stage/bin/${normalizedName.value} -Dhttp.port=$$PORT -Dconfig.resource=prod/application.conf -Ddb.default.migration.auto=true"
+  "web" -> s"target/universal/stage/bin/${normalizedName.value} -Dhttp.port=$$PORT -Dconfig.resource=prod/application_heroku.conf -Ddb.default.migration.auto=true"
 )
 
 herokuConfigVars in Compile := Map(
