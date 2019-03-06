@@ -72,11 +72,11 @@ envConfig := {
   ConfigFactory.parseFile(file("env") / (env + ".conf"))
 }
 
-flywayLocations := envConfig.value.getStringList("flywayLocations").asScala
-flywayDriver := envConfig.value.getString("jdbcDriver")
-flywayUrl := envConfig.value.getString("jdbcUrl")
-flywayUser := envConfig.value.getString("jdbcUserName")
-flywayPassword := envConfig.value.getString("jdbcPassword")
+flywayLocations := envConfig.value.getStringList("FLYWAY_LOCATIONS").asScala
+flywayDriver := envConfig.value.getString("JDBC_DRIVER")
+flywayUrl := envConfig.value.getString("JDBC_URL")
+flywayUser := envConfig.value.getString("JDBC_USERNAME")
+flywayPassword := envConfig.value.getString("JDBC_PASSWORD")
 
 play.sbt.routes.RoutesKeys.routesImport ++= Seq(
   "jp.t2v.lab.play2.pager.Pager",
